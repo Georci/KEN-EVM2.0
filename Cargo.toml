@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+tokio = { version = "1.41.1", features = ["full"] }
 primitive-types = { version = "0.12", default-features = false, features = ["rlp"] }
 serde = { version = "1.0.214", features = ["derive"] }
 ethers = "2.0.14"

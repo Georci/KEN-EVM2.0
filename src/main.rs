@@ -1,7 +1,4 @@
 use std::collections::{BTreeMap, HashMap};
-use std::env;
-use dotenv::dotenv;
-use ethers::prelude::{Provider, ProviderExt};
 use primitive_types::{H160, U256};
 use ken_evm::evm::EVM;
 use ken_evm::{deploy, external_call, Memory, Stack};
@@ -46,16 +43,4 @@ fn main(){
     println!("return_data is : {:?}", value);
 }
 
-/// 使用我们的evm执行真实的链上交易
-#[test]
-async fn test_execute_on_chain_tx() {
-    dotenv().ok();
-    // 1. set provider
-    let provider_http_url = env::var("ethereum").unwrap_or_else(|_| String::from("https://lb.nodies.app/v1/181a5ebf4c954f8496ae7cbc1ac8d03b"));
-    let provider = Provider::try_connect(provider_http_url.as_str())
-        .await
-        .unwrap();
-
-    let olympus_dao_tx = "0x3ed75df83d907412af874b7998d911fdf990704da87c2b1a8cf95ca5d21504cf";
-
-}
+// todo!:使用我们的evm执行真实的链上交易
