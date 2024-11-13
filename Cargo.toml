@@ -1,0 +1,12 @@
+[package]
+name = "ken_evm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+primitive-types = { version = "0.12", default-features = false, features = ["rlp"] }
+serde = { version = "1.0.214", features = ["derive"] }
+ethers = "2.0.14"
+ethnum = "1.5.0"
+revm-primitives = "14.0.0"
+dotenv = "0.15.0"
