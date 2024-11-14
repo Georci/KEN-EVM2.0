@@ -25,9 +25,12 @@ pub fn h160_to_u256(v: H160) -> U256 {
 
 /// Convert [U256] to [H160].
 pub fn u256_to_h160(u: U256) -> H160 {
-    let mut r = H160::default();
-    u.to_big_endian(&mut r[..]);
-    r
+    // 将 U256 转换为 32 字节的大端数组
+    let mut bytes = [0u8; 32];
+    u.to_big_endian(&mut bytes);
+
+    // 提取低 20 字节
+    H160::from_slice(&bytes[12..32])
 }
 
 /// Convert [U256] to [usize].

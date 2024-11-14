@@ -41,13 +41,12 @@ impl Stack{
 
     pub fn swap(&mut self, end_loc:usize) -> Result<(), Box<dyn ExitError>> {
         let len = self.data.len();
-        match self.data.len(){
-            _ if  len > 0  && len <= end_loc  => {
+        if len > 0  && len >= end_loc {
                 let first_loc = len - 1;
                 self.data.swap(first_loc - end_loc, first_loc);
                 Ok(())
-            }
-            _ => {Err(Box::new(StackError::InvalidRange))}
+            } else {
+            Err(Box::new(StackError::InvalidRange))
         }
     }
 
@@ -70,6 +69,25 @@ impl Stack{
         }
     }
 }
+
+#[test]
+fn test_swap() {
+    let mut stack = Stack::new(1024);
+    println!("initalized stack: {}", stack);
+
+    stack.push(U256::from(100));
+    println!("stack: {}", stack);
+    stack.push(U256::from(200));
+    println!("stack: {}", stack);
+    stack.push(U256::from(300));
+    println!("stack data len is {}", stack.data.len());
+    println!("before operate stack: {}", stack);
+
+    stack.swap(1);
+    println!("after operate stack: {}", stack);
+
+}
+
 
 impl fmt::Display for Stack {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {

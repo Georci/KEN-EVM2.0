@@ -10,6 +10,7 @@ use crate::machine::Memory::Memory;
 use crate::machine::Stack::Stack;
 use crate::utils::{u256_to_h160, vec_to_string, vec_to_u256};
 use crate::globalState::AccountState;
+use crate::opcode::arithmatic::add;
 
 /// create create2 return revert jump jumpi stop jumpdest returndatacopy returndatasize invalid selfdestruct
 /// call type: call staticcall delegatecall
@@ -79,6 +80,7 @@ pub fn _return(evm: &mut EVM) -> Result<(), Box<dyn ExitError>> {
     match evm.memory.read(offset, size) {
         Ok(copy_data) => {
             evm.return_data = Some(copy_data.clone());
+            println!("call returndata:{:?}", evm.return_data);
             evm.pc = usize::MAX;
             Ok(())
         }
@@ -113,8 +115,8 @@ pub fn jump(evm: &mut EVM) -> Result<(), Box<dyn ExitError>> {
 
 pub fn jumpi(evm: &mut EVM) -> Result<(), Box<dyn ExitError>> {
     let counter = evm.stack.pop()?;
-    let b = evm.stack.pop()?.as_usize();
-    if b == 1 {
+    let b = evm.stack.pop()?;
+    if b != U256::zero() {
         evm.pc = counter.as_usize();
     } else {
         evm.pc += 1;
@@ -152,12 +154,14 @@ pub fn returndatacopy(evm: &mut EVM) -> Result<(), Box<dyn ExitError>> {
 
 
 pub fn returndatasize(evm: &mut EVM) -> Result<(), Box<dyn ExitError>> {
-    let ret_data_size = match &evm.return_data {
+    let ret_data_size = match &evm.sub_return_data {
         None => 0,
         Some(data) => {
             data.len()
         }
     };
+    println!("ret_data_size is :{:?}", ret_data_size);
+
     match evm.stack.push(U256::from(ret_data_size)) {
         Ok(_) => {
             evm.pc += 1;
@@ -213,14 +217,16 @@ pub fn call(evm: &mut EVM) -> Result<(), Box<dyn ExitError>> {
     }
 }
 
+/// todo!:目前来说staticcall还没有对状态更改进行检查
 pub fn staticcall(evm: &mut EVM) -> Result<(), Box<dyn ExitError>> {
     let (gas, address, value, argsOffset, argsSize, retOffset, retSize) =
         call_pop(evm, CallType::StaticCall);
+    println!("static call to:{}, callvalue:{}", address, value.unwrap_or(U256::zero()));
     match call_core(
         evm,
         gas,
         address,
-        value.unwrap(),
+        value.unwrap_or(U256::zero()),
         argsOffset,
         argsSize,
         retOffset,
@@ -320,6 +326,7 @@ pub fn call_core(
     let now_call = evm.call_stack.last().unwrap();
     // 如果是最外层的call操作应该是不需要在创建一个Call的，就比如说userA -> contractB, 这个call应该是直接就在外层调用函数的时候由用户构建
     // 但是还是有一个问题，就是如果是由用户直接参与的外部调用，应该不会遇到call类型操作码吧 (√)
+    println!("now execution address: {}", address);
     let _call = Call {
         from: now_call.to.unwrap(),
         to: Some(u256_to_h160(address)),

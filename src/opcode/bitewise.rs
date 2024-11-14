@@ -5,8 +5,8 @@ use crate::evm::EVM;
 
 /// and or xor not shl shr sar byte
 pub fn and(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
-    let a = evm.stack.pop()?.as_usize();
-    let b = evm.stack.pop()?.as_usize();
+    let a = evm.stack.pop()?;
+    let b = evm.stack.pop()?;
 
     let res = a & b;
     match evm.stack.push(U256::from(res)) {
@@ -19,8 +19,8 @@ pub fn and(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
 }
 
 pub fn or(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
-    let a = evm.stack.pop()?.as_usize();
-    let b = evm.stack.pop()?.as_usize();
+    let a = evm.stack.pop()?;
+    let b = evm.stack.pop()?;
 
     let res = a | b;
     match evm.stack.push(U256::from(res)) {
@@ -33,8 +33,8 @@ pub fn or(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
 }
 
 pub fn xor(evm: &mut EVM) -> Result<(), Box<dyn ExitError>> {
-    let a = evm.stack.pop()?.as_usize();
-    let b = evm.stack.pop()?.as_usize();
+    let a = evm.stack.pop()?;
+    let b = evm.stack.pop()?;
 
     let res = a ^ b;
     match evm.stack.push(U256::from(res)) {
@@ -48,7 +48,7 @@ pub fn xor(evm: &mut EVM) -> Result<(), Box<dyn ExitError>> {
 
 
 pub fn not(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
-    let a = evm.stack.pop()?.as_usize();
+    let a = evm.stack.pop()?;
 
     let res = !a;
     match evm.stack.push(U256::from(res)) {
@@ -61,8 +61,8 @@ pub fn not(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
 }
 
 pub fn shl(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
-    let shift = evm.stack.pop()?.as_usize();
-    let value = evm.stack.pop()?.as_usize();
+    let shift = evm.stack.pop()?;
+    let value = evm.stack.pop()?;
 
     let res = value << shift;
     match evm.stack.push(U256::from(res)) {
@@ -75,7 +75,7 @@ pub fn shl(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
 }
 
 pub fn shr(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
-    let shift = evm.stack.pop()?.as_usize();
+    let shift = evm.stack.pop()?;
     let value = evm.stack.pop()?;
     let res = value >> shift;
     match evm.stack.push(U256::from(res)) {
@@ -89,8 +89,8 @@ pub fn shr(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
 
 /// 有符号整数右移
 pub fn sar(evm: &mut EVM) -> Result<(),Box<dyn ExitError>> {
-    let shift = evm.stack.pop()?.as_usize();
-    let value:isize = evm.stack.pop()?.as_usize().try_into().unwrap();
+    let shift = evm.stack.pop()?;
+    let value = evm.stack.pop()?;
 
     let res = value >> shift;
     match evm.stack.push(U256::from(res)) {
